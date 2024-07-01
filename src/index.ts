@@ -143,9 +143,12 @@ class OutlineVPN {
     }
 
     public async getUser(id: string): Promise<User|null> {
-        const response = await fetch(`${this.apiUrl}/access-keys/${id}`)
+        const response = await this.fetch({
+            url: `${this.apiUrl}/access-keys/${id}`,
+            method: 'GET'
+        })
         if(response.ok) {
-            const json = await response.json()
+            const json = JSON.parse(response.body);
             return json
         }
 
