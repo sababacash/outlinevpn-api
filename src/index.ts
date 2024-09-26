@@ -24,7 +24,7 @@ class OutlineVPN {
 
     public async getServer(): Promise<Server> {
         const response = await this.fetch({ url: `${this.apiUrl}/server`, method: 'GET' })
-        if(response.ok) {
+        if (response.ok) {
             const json = JSON.parse(response.body)
             return json
         } else {
@@ -55,7 +55,8 @@ class OutlineVPN {
     }
 
     public async deleteDefaultDataLimit(): Promise<boolean> {
-        const response = await this.fetch({ url: `${this.apiUrl}/server/access-key-data-limit`,
+        const response = await this.fetch({
+            url: `${this.apiUrl}/server/access-key-data-limit`,
             method: 'DELETE'
         })
 
@@ -63,7 +64,8 @@ class OutlineVPN {
     }
 
     public async setHostnameForAccessKeys(hostname: string): Promise<boolean> {
-        const response = await this.fetch({ url: `${this.apiUrl}/server/hostname-for-access-keys`,
+        const response = await this.fetch({
+            url: `${this.apiUrl}/server/hostname-for-access-keys`,
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ hostname })
@@ -73,7 +75,8 @@ class OutlineVPN {
     }
 
     public async setPortForNewAccessKeys(port: number): Promise<boolean> {
-        const response = await this.fetch({ url: `${this.apiUrl}/server/port-for-new-access-keys`,
+        const response = await this.fetch({
+            url: `${this.apiUrl}/server/port-for-new-access-keys`,
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ port })
@@ -85,7 +88,7 @@ class OutlineVPN {
     public async getDataUsage(): Promise<DataUsageByUser> {
         const response = await this.fetch({ url: `${this.apiUrl}/metrics/transfer`, method: 'GET' })
 
-        if(response.ok) {
+        if (response.ok) {
             const json = JSON.parse(response.body)
             return json
         } else {
@@ -98,7 +101,7 @@ class OutlineVPN {
 
         const userUsage = bytesTransferredByUserId[id]
 
-        if(userUsage) {
+        if (userUsage) {
             return userUsage
         } else {
             throw new Error('No user found, check metrics is enabled')
@@ -108,7 +111,7 @@ class OutlineVPN {
     public async getShareMetrics(): Promise<ServerMetrics> {
         const response = await this.fetch({ url: `${this.apiUrl}/metrics/enabled`, method: 'GET' })
 
-        if(response.ok) {
+        if (response.ok) {
             const json = JSON.parse(response.body)
             return json
         } else {
@@ -117,13 +120,14 @@ class OutlineVPN {
     }
 
     public async setShareMetrics(metricsEnabled: boolean): Promise<boolean> {
-        const response = await this.fetch({ url: `${this.apiUrl}/metrics/enabled`,
+        const response = await this.fetch({
+            url: `${this.apiUrl}/metrics/enabled`,
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ metricsEnabled })
         })
 
-        if(response.ok) {
+        if (response.ok) {
             const json = JSON.parse(response.body)
             return json
         } else {
@@ -134,7 +138,7 @@ class OutlineVPN {
     public async getUsers(): Promise<User[]> {
         const response = await this.fetch({ url: `${this.apiUrl}/access-keys`, method: 'GET' })
 
-        if(response.ok) {
+        if (response.ok) {
             const { accessKeys } = JSON.parse(response.body)
             return accessKeys
         } else {
@@ -142,12 +146,12 @@ class OutlineVPN {
         }
     }
 
-    public async getUser(id: string): Promise<User|null> {
+    public async getUser(id: string): Promise<User | null> {
         const response = await this.fetch({
             url: `${this.apiUrl}/access-keys/${id}`,
             method: 'GET'
         })
-        if(response.ok) {
+        if (response.ok) {
             const json = JSON.parse(response.body);
             return json
         }
@@ -155,13 +159,19 @@ class OutlineVPN {
         return null
     }
 
-    public async createUser(): Promise<User> {
+    public async createUser(name?: string, limit?: number): Promise<User> {
+        const body: { name?: string; limit?: { bytes: number } } = {}
+        if (name) body.name = name
+        if (limit && Number.isInteger(limit) && limit > 0) body.limit = { bytes: limit }
+
+
         const response = await this.fetch({
             url: `${this.apiUrl}/access-keys`,
-            method: 'POST'
+            method: 'POST',
+            body: JSON.stringify(body)
         })
 
-        if(response.ok) {
+        if (response.ok) {
             const json = JSON.parse(response.body)
             return json
         } else {
