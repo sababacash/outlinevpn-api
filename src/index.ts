@@ -168,6 +168,7 @@ class OutlineVPN {
         const response = await this.fetch({
             url: `${this.apiUrl}/access-keys`,
             method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(body)
         })
 
